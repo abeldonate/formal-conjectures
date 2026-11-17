@@ -1,0 +1,91 @@
+/-
+Copyright 2026 The Formal Conjectures Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-/
+module
+
+public import FormalConjecturesUtil
+
+/-!
+# Conjecture 20.12
+by G. M. Bergman
+
+Let us say that a group G has the unique n-fold product property (u.-n-p.) if
+for every n-tuple of finite nonempty subsets A_1, . . . , A_n ⊆ G there exists g ∈ G which
+can be written in one and only one way as g = a1 · · · an with ai ∈ Ai. It is easy to
+see that u.-n-p. implies u.-m-p. for n ⩾ m (since some of the Ai can be {1}).
+Are the conditions u.-n-p. (n ⩾ 2) all equivalent to u.-2-p., the usual unique
+product condition?
+
+*Reference:* [The Kourovka Notebook](https://arxiv.org/abs/1401.0300v40)
+!-/
+
+@[expose] public section
+
+namespace Kourovka.«20.12»
+
+
+/--
+Let us say that a group $G$ has the unique $n$-fold product property (u.-n-p.) if for every
+$n$-tuple of finite nonempty subsets $A_1, ..., A_n ⊆ G$ there exists $g ∈ G$ which can be
+written in one and only one wag as $g = a_1 ... a_n$ with $a_i ∈ A_i$.
+-/
+def unique_n_fold_product (G : Type*) [Group G] (n : ℕ) :  Prop :=
+∀ (A : Fin n → Finset G),
+  ((∀ i, (A i).Nonempty) →
+      ∃ g : G,
+        ∃! (a : (i : Fin n) → A i),
+          g = Fin.prod (fun i => (a i : G)))
+
+/--
+It is easy to see, that u.-n-p. implies u.-m-p. for $n ≥ m$ (since some of the $A_i$
+can be $\{1\}$).
+
+Note: We started formalizing the proof, but didn't finish it, as after some hours (and ~30 lines)
+we thought this is too much for project 1 and didn't continue.
+The proof sketch goes as follows:
+Let $n ≥ m$ and $G$ be u.-n-p. Now take $A_1, ... A_m ⊆ G$ to show u.-m-p.
+Define $A_{m+1}, ..., A_n := \{1\}$ and apply u.-n-p. to get $g ∈ G$ with
+$g = a_1, ..., a_n$ with $a_i ∈ A_i$. Since $A_i = \{1\}$ for $i > m$ this implies
+$g = a_1, ..., a_m$, i.e. G is u.-m-p.
+-/
+
+@[category API]
+lemma unp_implies_ump :
+  ∀ (G : Type*) [Group G],
+    ∀ m ≥ 2,
+      ∀ n ≥ m,
+        (unique_n_fold_product G n →  unique_n_fold_product G m)   := by
+  sorry
+
+/--
+Are the conditions u.-n-p. ($n ≥ 2$) all equivalent to u.-2-p., the usual unique
+product condition?
+
+Note: one implication follows from the lemma above, the other one is an open conjecture.
+-/
+
+@[category research open, question, AMS 20]
+theorem kourovka_20_12 :
+∀ (G : Type*) [Group G],
+  ∀ n ≥ 2,
+    (unique_n_fold_product G n ↔ unique_n_fold_product G 2)   := by
+  intro G hG n hn
+  constructor
+  · apply unp_implies_ump
+    · simp
+    · assumption
+  · sorry
+
+end Kourovka.«20.12»
